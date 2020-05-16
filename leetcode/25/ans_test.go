@@ -10,16 +10,12 @@ var _ fmt.Stringer = (*ListNode)(nil)
 
 // String 方法方便调试输出
 func (head *ListNode) String() string {
-	s := strings.Builder{}
-	for {
-		if head == nil {
-			break
-		}
+	b := strings.Builder{}
+	for ; head != nil; head = head.Next {
 		// 为了省事，不特殊处理最后的逗号
-		s.WriteString(fmt.Sprintf("%d%s", head.Val, ","))
-		head = head.Next
+		b.WriteString(fmt.Sprintf("%d%s", head.Val, ","))
 	}
-	return s.String()
+	return b.String()
 }
 
 func sliceToList(s []int) *ListNode {
