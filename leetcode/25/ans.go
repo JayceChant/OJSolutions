@@ -9,21 +9,20 @@ func reverseKGroup(head *ListNode, k int) *ListNode {
 	if k == 1 {
 		return head
 	}
-	// return reverseSubGroup(head)
-	nextG := head
+	cur := head
 	var gHead, gTail, tail *ListNode
 	for {
-		gHead = nextG
+		gHead = cur
 		if gHead == nil {
 			return head
 		}
 		for i := 0; i < k; i++ {
-			if nextG == nil {
+			if cur == nil {
 				tail.Next = gHead
 				return head
 			}
-			gTail = nextG
-			nextG = nextG.Next
+			gTail = cur
+			cur = cur.Next
 		}
 		gTail.Next = nil
 		if tail == nil {
@@ -35,13 +34,8 @@ func reverseKGroup(head *ListNode, k int) *ListNode {
 	}
 }
 
-func reverseSubGroup(head *ListNode) *ListNode {
-	prev := head
+func reverseSubGroup(prev *ListNode) *ListNode {
 	cur := prev.Next
-	if cur == nil {
-		return head
-	}
-
 	next := cur.Next
 	prev.Next = nil
 
