@@ -11,7 +11,7 @@ type ListNode struct {
 }
 
 func mergeKLists(lists []*ListNode) *ListNode {
-	return mergeKListsOneByOne(lists)
+	return mergeKListsInsertDAC(lists)
 }
 
 func mergeKListsOneByOne(lists []*ListNode) *ListNode {
@@ -64,7 +64,7 @@ func insert(la *ListNode, lb *ListNode) *ListNode {
 	head.Next = la
 	tail := head
 	for tail.Next != nil && lb != nil {
-		if lb.Val < tail.Next.Val {
+		if lb.Val <= tail.Next.Val {
 			tail.Next, lb.Next, lb = lb, tail.Next, lb.Next
 		}
 		tail = tail.Next
@@ -77,17 +77,34 @@ func insert(la *ListNode, lb *ListNode) *ListNode {
 
 // DAC = Divide and Conquer
 func mergeKListsInsertDAC(lists []*ListNode) *ListNode {
-	if len(lists) == 0 {
+	k := len(lists)
+	if k == 0 {
 		return nil
 	}
-	k := len(lists)
 
+	// 空白伪头结点，避免判空处理
+	head := new(ListNode)
+	// 合并步长从 1 开始不断翻倍
 	for step := 1; step < k; {
+		// 分组宽度是步长的两倍
 		width := step * 2
-		for i := 0; i < len(lists); i += width {
-			if i+step < k {
-				lists[i] = insert(lists[i], lists[i+step])
+		for i := 0; i+step < k; i += width {
+			// func merge(list1 *ListNode, list2 *ListNode) 实际开发中这部分应该抽取子函数
+			head.Next = lists[i]
+			list2 := lists[i+step]
+			tail := head
+			for tail.Next != nil && list2 != nil {
+				if list2.Val <= tail.Next.Val {
+					tail.Next, list2.Next, list2 = list2, tail.Next, list2.Next
+				}
+				tail = tail.Next
 			}
+			if list2 != nil {
+				tail.Next = list2
+			}
+			// 第一个节点可能是来自 list2，合并结果一定要赋值回去
+			lists[i] = head.Next
+			// func merge() end
 		}
 		step = width
 	}
@@ -96,48 +113,48 @@ func mergeKListsInsertDAC(lists []*ListNode) *ListNode {
 
 type myHeap []*ListNode
 
-func (h *myHeap) push(node *ListNode) {
-	cur := len(*h)
-	*h = append(*h, node)
-	hh := *h
+func (hp *myHeap) push(node *ListNode) {
+	child := len(*hp)
+	*hp = append(*hp, node)
+	h := *hp
 	// bubble up
-	for cur > 0 {
-		up := (cur - 1) / 2
-		if hh[up].Val <= hh[cur].Val {
+	for child > 0 {
+		parent := (child - 1) / 2
+		if h[parent].Val <= h[child].Val {
 			break
 		}
-		hh[up], hh[cur] = hh[cur], hh[up]
-		cur = up
+		h[parent], h[child] = h[child], h[parent]
+		child = parent
 	}
 }
 
-func (h *myHeap) pop() *ListNode {
-	hh := *h
-	node := hh[0]
-	n := len(hh)
-	hh[0] = hh[n-1]
+func (hp *myHeap) pop() *ListNode {
+	h := *hp
+	top := h[0]
+	k := len(h)
+	h[0] = h[k-1]
 	// bubble down
-	i := 0
+	parent := 0
 	for {
-		down := i*2 + 1
-		if down >= n {
+		child := parent*2 + 1
+		if child >= k {
 			break
 		}
-		if down+1 < n && hh[down].Val > hh[down+1].Val {
-			down++
+		if child+1 < k && h[child].Val > h[child+1].Val {
+			child++
 		}
-		if hh[i].Val <= hh[down].Val {
+		if h[parent].Val <= h[child].Val {
 			break
 		}
-		hh[i], hh[down] = hh[down], hh[i]
-		i = down
+		h[parent], h[child] = h[child], h[parent]
+		parent = child
 	}
-	hh[n-1] = nil // 避免内存泄漏
-	*h = hh[:n-1]
-	return node
+	h[k-1] = nil // 避免内存泄漏
+	*hp = h[:k-1]
+	return top
 }
 
-func mergeKListsWithHeap(lists []*ListNode) *ListNode {
+func mergeKListsWithNHeap(lists []*ListNode) *ListNode {
 	h := make(myHeap, 0)
 	for _, l := range lists {
 		for l != nil {
@@ -155,7 +172,7 @@ func mergeKListsWithHeap(lists []*ListNode) *ListNode {
 	return head.Next
 }
 
-func mergeKListsWithHeap2(lists []*ListNode) *ListNode {
+func mergeKListsWithHeapPushPop(lists []*ListNode) *ListNode {
 	h := make(myHeap, 0)
 	for _, l := range lists {
 		if l != nil {
@@ -175,59 +192,74 @@ func mergeKListsWithHeap2(lists []*ListNode) *ListNode {
 	return head.Next
 }
 
+func (h myHeap) build() {
+	k := len(h)
+	for parent := k/2 - 1; parent >= 0; parent-- {
+		child := parent*2 + 1
+		if child+1 < k && h[child].Val > h[child+1].Val {
+			child++
+		}
+		if h[parent].Val <= h[child].Val {
+			continue
+		}
+		h[parent], h[child] = h[child], h[parent]
+	}
+}
+
 func (h myHeap) top() *ListNode {
 	return h[0]
 }
 
 func (h myHeap) update(i int, node *ListNode) {
 	h[i] = node
-	n := len(h)
+	k := len(h)
 	for {
-		down := i*2 + 1
-		if down >= n {
+		child := i*2 + 1
+		if child >= k {
 			break
 		}
-		if down+1 < n && h[down].Val > h[down+1].Val {
-			down++
+		if child+1 < k && h[child].Val > h[child+1].Val {
+			child++
 		}
-		if h[i].Val <= h[down].Val {
+		if h[i].Val <= h[child].Val {
 			break
 		}
-		h[i], h[down] = h[down], h[i]
-		i = down
+		h[i], h[child] = h[child], h[i]
+		i = child
 	}
 }
 
-func (h *myHeap) remove(i int) {
-	hh := *h
-	n := len(hh)
-	hh[i] = hh[n-1]
+func (hp *myHeap) remove(i int) {
+	h := *hp
+	k := len(h)
+	h[i] = h[k-1]
 	// bubble down
 	for {
-		down := i*2 + 1
-		if down >= n {
+		child := i*2 + 1
+		if child >= k {
 			break
 		}
-		if down+1 < n && hh[down].Val > hh[down+1].Val {
-			down++
+		if child+1 < k && h[child].Val > h[child+1].Val {
+			child++
 		}
-		if hh[i].Val <= hh[down].Val {
+		if h[i].Val <= h[child].Val {
 			break
 		}
-		hh[i], hh[down] = hh[down], hh[i]
-		i = down
+		h[i], h[child] = h[child], h[i]
+		i = child
 	}
-	hh[n-1] = nil
-	*h = hh[:n-1]
+	h[k-1] = nil
+	*hp = h[:k-1]
 }
 
-func mergeKListsWithHeap3(lists []*ListNode) *ListNode {
+func mergeKListsWithHeapUpdateRemove(lists []*ListNode) *ListNode {
 	h := make(myHeap, 0)
 	for _, l := range lists {
 		if l != nil {
-			h.push(l)
+			h = append(h, l)
 		}
 	}
+	h.build()
 
 	head := new(ListNode)
 	tail := head
@@ -266,9 +298,10 @@ func mergeKListsWithBuiltinHeap(lists []*ListNode) *ListNode {
 	h := make(nodeHeap, 0)
 	for _, l := range lists {
 		if l != nil {
-			heap.Push(&h, l)
+			h = append(h, l)
 		}
 	}
+	heap.Init(&h)
 
 	head := new(ListNode)
 	tail := head

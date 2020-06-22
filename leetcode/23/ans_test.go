@@ -69,6 +69,14 @@ var tests = []struct {
 		},
 		want: "1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->2->2->2->2->2->2->2->2->2->2->2->2->2->2->2->2->2->2->2->2->2->2->3->3->3->3->3->3->3->3->3->3->3->3->3->3->3->3->3->3->3->3->3->4->4->4->4->4->4->4->4->4->4->4->4->4->4->4->4->4->4->4->4->4->5->5->5->5->5->5->5->5->5->5->5->5->5->5->5->5->5->5->5->5->6->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->9->",
 	},
+	{
+		name: "3",
+		cases: [][]int{
+			{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+			{2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}, {17}, {18}, {19}, {20}, {21}, {22}, {23}, {24}, {25}, {26}, {27}, {28}, {29}, {30}, {31}, {32}, {33}, {34}, {35}, {36}, {37}, {38}, {39}, {40}, {41}, {42}, {43}, {44}, {45}, {46}, {47}, {48}, {49}, {50}, {51}, {52}, {53}, {54}, {55}, {56}, {57}, {58}, {59}, {60}, {61}, {62}, {63}, {64}, {65}, {66}, {67}, {68}, {69}, {70}, {71}, {72}, {73}, {74}, {75}, {76}, {77}, {78}, {79}, {80}, {81}, {82}, {83}, {84}, {85}, {86}, {87}, {88}, {89}, {90}, {91}, {92}, {93}, {94}, {95}, {96}, {97}, {98}, {99}, {100},
+		},
+		want: "1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->1->2->3->4->5->6->7->8->9->10->11->12->13->14->15->16->17->18->19->20->21->22->23->24->25->26->27->28->29->30->31->32->33->34->35->36->37->38->39->40->41->42->43->44->45->46->47->48->49->50->51->52->53->54->55->56->57->58->59->60->61->62->63->64->65->66->67->68->69->70->71->72->73->74->75->76->77->78->79->80->81->82->83->84->85->86->87->88->89->90->91->92->93->94->95->96->97->98->99->100->",
+	},
 }
 
 func Test_mergeKLists(t *testing.T) {
@@ -84,19 +92,27 @@ func Test_mergeKLists(t *testing.T) {
 			if got := mergeKListsInsertDAC(listsFromSlices(tt.cases)); got.String() != tt.want {
 				t.Errorf("mergeKListsInsertDAC() = %s, want %s", got, tt.want)
 			}
-			if got := mergeKListsWithHeap(listsFromSlices(tt.cases)); got.String() != tt.want {
+			if got := mergeKListsWithNHeap(listsFromSlices(tt.cases)); got.String() != tt.want {
 				t.Errorf("mergeKListsWithHeap() = %s, want %s", got, tt.want)
 			}
-			if got := mergeKListsWithHeap2(listsFromSlices(tt.cases)); got.String() != tt.want {
+			if got := mergeKListsWithHeapPushPop(listsFromSlices(tt.cases)); got.String() != tt.want {
 				t.Errorf("mergeKListsWithHeap2() = %s, want %s", got, tt.want)
 			}
-			if got := mergeKListsWithHeap3(listsFromSlices(tt.cases)); got.String() != tt.want {
+			if got := mergeKListsWithHeapUpdateRemove(listsFromSlices(tt.cases)); got.String() != tt.want {
 				t.Errorf("mergeKListsWithHeap3() = %s, want %s", got, tt.want)
 			}
 			if got := mergeKListsWithBuiltinHeap(listsFromSlices(tt.cases)); got.String() != tt.want {
 				t.Errorf("mergeKListsWithBuiltinHeap() = %s, want %s", got, tt.want)
 			}
 		})
+	}
+}
+
+func Benchmark_listsFromSlices(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		for _, tt := range tests {
+			listsFromSlices(tt.cases)
+		}
 	}
 }
 
@@ -124,26 +140,26 @@ func Benchmark_mergeKListsInsertDAC(b *testing.B) {
 	}
 }
 
-func Benchmark_mergeKListsWithHeap(b *testing.B) {
+func Benchmark_mergeKListsWithNHeap(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		for _, tt := range tests {
-			mergeKListsWithHeap(listsFromSlices(tt.cases))
+			mergeKListsWithNHeap(listsFromSlices(tt.cases))
 		}
 	}
 }
 
-func Benchmark_mergeKListsWithHeap2(b *testing.B) {
+func Benchmark_mergeKListsWithHeapPushPop(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		for _, tt := range tests {
-			mergeKListsWithHeap2(listsFromSlices(tt.cases))
+			mergeKListsWithHeapPushPop(listsFromSlices(tt.cases))
 		}
 	}
 }
 
-func Benchmark_mergeKListsWithHeap3(b *testing.B) {
+func Benchmark_mergeKListsWithHeapUpdateRemove(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		for _, tt := range tests {
-			mergeKListsWithHeap3(listsFromSlices(tt.cases))
+			mergeKListsWithHeapUpdateRemove(listsFromSlices(tt.cases))
 		}
 	}
 }
