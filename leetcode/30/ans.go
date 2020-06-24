@@ -216,8 +216,8 @@ func findSubstringHash(s string, words []string) []int {
 
 func dfsHash(start, wordLeft int) bool {
 	word := gs[start : start+wlen]
-	count, ok := word2count[word]
-	if !ok || count <= 0 {
+	count := word2count[word]
+	if count <= 0 {
 		return false
 	}
 
