@@ -1,5 +1,7 @@
 package main
 
+// 4 ms, 93.16%
+// 3.4 MB, 61.77%
 func twoSum(nums []int, target int) []int {
 	numToIdx := make(map[int]int, len(nums))
 	ans := make([]int, 0, 2)
