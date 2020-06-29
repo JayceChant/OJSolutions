@@ -49,28 +49,28 @@ var tests = []struct {
 func Test_threeSum(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// if got := threeSum2(tt.nums); !reflect.DeepEqual(got, tt.want) {
-			// 	t.Errorf("threeSum2() = %v, want %v", got, tt.want)
+			// if got := threeSumMap(tt.nums); !reflect.DeepEqual(got, tt.want) {
+			// 	t.Errorf("threeSumMap() = %v, want %v", got, tt.want)
 			// }
-			if got := threeSum1(tt.nums); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("threeSum1() = %v, want %v", got, tt.want)
+			if got := threeSum(tt.nums); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("threeSum() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func Benchmark_threeSum1(b *testing.B) {
+func Benchmark_threeSum(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		for _, tt := range tests {
-			threeSum1(tt.nums)
+			threeSum(tt.nums)
 		}
 	}
 }
 
-func Benchmark_threeSum2(b *testing.B) {
+func Benchmark_threeSumMap(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		for _, tt := range tests {
-			threeSum2(tt.nums)
+			threeSumMap(tt.nums)
 		}
 	}
 }
