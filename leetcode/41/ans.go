@@ -16,3 +16,29 @@ func firstMissingPositive(nums []int) int {
 	}
 	return len(nums) + 1
 }
+
+func firstMissingPositive2(nums []int) int {
+	for i := range nums {
+		if nums[i] < 1 || nums[i] > len(nums) {
+			nums[i] = len(nums) + 1
+		}
+	}
+	for _, num := range nums {
+		if myAbs(num) <= len(nums) {
+			nums[myAbs(num)-1] = -myAbs(nums[myAbs(num)-1])
+		}
+	}
+	for i := range nums {
+		if nums[i] > 0 {
+			return i + 1
+		}
+	}
+	return len(nums) + 1
+}
+
+func myAbs(num int) int {
+	if num < 0 {
+		return -num
+	}
+	return num
+}
