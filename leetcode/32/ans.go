@@ -1,5 +1,7 @@
 package main
 
+// 0ms, 100%
+// 2.3MB, 100%
 func longestValidParentheses(s string) int {
 	var longest, matchLen, stackSize int
 	for _, ch := range s {

@@ -1,5 +1,7 @@
 package main
 
+import "math/rand"
+
 // 4ms, 98.48% (min 0ms)
 // 2.7MB, 68.13% (mine 2724,min 2712kb)
 func threeSumClosest(nums []int, target int) int {
@@ -42,6 +44,9 @@ func partition(nums []int, head int, tail int) {
 	if tail-head < 2 {
 		return
 	}
+
+	x := rand.Intn(tail - head)
+	nums[head], nums[head+x] = nums[head+x], nums[head]
 
 	left := head + 1
 	right := tail - 1

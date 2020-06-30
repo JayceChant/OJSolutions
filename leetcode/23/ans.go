@@ -195,14 +195,21 @@ func mergeKListsWithHeapPushPop(lists []*ListNode) *ListNode {
 func (h myHeap) build() {
 	k := len(h)
 	for parent := k/2 - 1; parent >= 0; parent-- {
-		child := parent*2 + 1
-		if child+1 < k && h[child].Val > h[child+1].Val {
-			child++
+		// bubble down
+		for {
+			child := parent*2 + 1
+			if child >= k {
+				break
+			}
+			if child+1 < k && h[child].Val > h[child+1].Val {
+				child++
+			}
+			if h[parent].Val <= h[child].Val {
+				break
+			}
+			h[parent], h[child] = h[child], h[parent]
+			parent = child
 		}
-		if h[parent].Val <= h[child].Val {
-			continue
-		}
-		h[parent], h[child] = h[child], h[parent]
 	}
 }
 
