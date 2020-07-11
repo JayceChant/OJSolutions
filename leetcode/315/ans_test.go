@@ -46,6 +46,10 @@ func Test_countSmaller(t *testing.T) {
 			if got := countSmallerAVL(tt.nums); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("countSmallerAVL() = %v, want %v", got, tt.want)
 			}
+
+			if got := countSmallerBIT(tt.nums); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("countSmallerBIT() = %v, want %v", got, tt.want)
+			}
 		})
 	}
 }
@@ -70,6 +74,14 @@ func Benchmark_countSmallerAVL(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		for _, tt := range tests {
 			countSmallerAVL(tt.nums)
+		}
+	}
+}
+
+func Benchmark_countSmallerBIT(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		for _, tt := range tests {
+			countSmallerBIT(tt.nums)
 		}
 	}
 }
