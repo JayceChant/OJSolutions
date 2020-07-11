@@ -270,54 +270,30 @@ func balanceFactor(n *avlNode) int {
 // 	return fmt.Sprintf("[%v,%d=%d,%v]", n.left, n.value, n.count, n.right)
 // }
 
-var _ sort.Interface = pairs(nil)
-
 func countSmallerBIT(nums []int) []int {
 	size := len(nums)
 	counts := make([]int, size)
 	if size == 0 {
 		return counts
 	}
-	indexs := make(pairs, size)
-	for i := 0; i < size; i++ {
-		indexs[i].index = i
-		indexs[i].value = nums[i]
-	}
+
+	sorted := make([]int, size)
+	copy(sorted, nums)
 	// use Stable will double the time
-	sort.Sort(pairs(indexs))
-	//fmt.Println(indexs)
-	orders := make([]int, size)
-	orders[indexs[0].index] = 1
-	for i := 1; i < size; i++ {
-		if nums[indexs[i].index] == nums[indexs[i-1].index] {
-			orders[indexs[i].index] = orders[indexs[i-1].index]
-		} else {
-			orders[indexs[i].index] = i + 1
-		}
-	}
-	//fmt.Println(orders)
+	sort.Ints(sorted)
 	bit := make(fenwick, size+1)
-	counts[size-1] = 0
-	for i := size - 2; i >= 0; i-- {
-		bit.increase(orders[i+1])
+	for i := size - 1; i >= 0; i-- {
+		order := sort.SearchInts(sorted, nums[i])
+		// unstable sort, use same order for same num
+		for order > 0 && sorted[order] == sorted[order-1] {
+			order--
+		}
+		counts[i] = bit.preSum(order)
+		bit.increase(order + 1)
 		//fmt.Println(bit)
-		counts[i] = bit.preSum(orders[i] - 1)
 	}
 	return counts
 }
-
-type inode struct {
-	value int
-	index int
-}
-
-type pairs []inode
-
-func (p pairs) Len() int { return len(p) }
-
-func (p pairs) Less(i, j int) bool { return p[i].value < p[j].value }
-
-func (p pairs) Swap(i, j int) { p[i], p[j] = p[j], p[i] }
 
 type fenwick []int
 
