@@ -78,6 +78,8 @@ type node struct {
 // 	return fmt.Sprintf("[%d,%d,%d]", n.value, n.index, n.count)
 // }
 
+// 12 ms, faster than 77.48%
+// 4.9 MB, less than 50.00%
 func countSmallerAVL(nums []int) []int {
 	size := len(nums)
 	counts := make([]int, size)
@@ -93,13 +95,9 @@ func countSmallerAVL(nums []int) []int {
 		value: nums[size-1],
 		count: 1,
 	}
-	counts[size-2] = tree.countSmaller(nums[size-2])
-	//fmt.Println()
-	for i := size - 3; i >= 0; i-- {
-		tree.add(nums[i+1])
+	for i := size - 2; i >= 0; i-- {
 		//fmt.Println(tree)
-		counts[i] = tree.countSmaller(nums[i])
-		//fmt.Println()
+		counts[i] = tree.add(nums[i])
 	}
 	return counts
 }
@@ -112,9 +110,16 @@ type avlNode struct {
 	right  *avlNode
 }
 
-func (n *avlNode) add(value int) {
+func (n *avlNode) add(value int) (countSmaller int) {
 	// count 包括子树的值，所以经过就要自增
 	n.count++
+	if value == n.value {
+		if n.left == nil {
+			return 0
+		}
+		return n.left.count
+	}
+
 	if value < n.value {
 		if n.left == nil {
 			n.left = &avlNode{
@@ -124,26 +129,29 @@ func (n *avlNode) add(value int) {
 			if n.height == 0 {
 				n.height = 1
 			}
-		} else {
-			n.left.add(value)
-			n.left = n.left.rebalance()
+			return 0
 		}
+
+		countSmaller = n.left.add(value)
+		n.left = n.left.rebalance()
+		return
 	}
 
-	if value > n.value {
-		if n.right == nil {
-			n.right = &avlNode{
-				value: value,
-				count: 1,
-			}
-			if n.height == 0 {
-				n.height = 1
-			}
-		} else {
-			n.right.add(value)
-			n.right = n.right.rebalance()
+	// value > n.value
+	if n.right == nil {
+		n.right = &avlNode{
+			value: value,
+			count: 1,
 		}
+		if n.height == 0 {
+			n.height = 1
+		}
+		return n.count - 1
 	}
+	countSmaller = n.right.add(value)
+	countSmaller += (n.count - n.right.count)
+	n.right = n.right.rebalance()
+	return
 }
 
 func (n *avlNode) rebalance() *avlNode {
@@ -230,29 +238,30 @@ func balanceFactor(n *avlNode) int {
 	return lHeight - rHeight
 }
 
-func (n *avlNode) countSmaller(value int) int {
-	//fmt.Printf("[%d,%d],", value, n.value)
-	if value == n.value {
-		if n.left == nil {
-			return 0
-		}
-		return n.left.count
-	}
+// count when add
+// func (n *avlNode) countSmaller(value int) int {
+// 	//fmt.Printf("[%d,%d],", value, n.value)
+// 	if value == n.value {
+// 		if n.left == nil {
+// 			return 0
+// 		}
+// 		return n.left.count
+// 	}
 
-	if value < n.value {
-		if n.left == nil {
-			return 0
-		}
-		return n.left.countSmaller(value)
-	}
+// 	if value < n.value {
+// 		if n.left == nil {
+// 			return 0
+// 		}
+// 		return n.left.countSmaller(value)
+// 	}
 
-	// value > n.value
-	if n.right == nil {
-		return n.count
-	}
-	return n.count - n.right.count + n.right.countSmaller(value)
-}
+// 	// value > n.value
+// 	if n.right == nil {
+// 		return n.count
+// 	}
+// 	return n.count - n.right.count + n.right.countSmaller(value)
+// }
 
 // func (n *avlNode) String() string {
-// 	return fmt.Sprintf("[%v,%d,%v]", n.left, n.value, n.right)
+// 	return fmt.Sprintf("[%v,%d=%d,%v]", n.left, n.value, n.count, n.right)
 // }
