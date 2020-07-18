@@ -31,6 +31,8 @@ func splitArrayN2(nums []int) int {
 	return dp[0]
 }
 
+// =======================================TLE code above=============================================
+
 func calcGCD(a, b int) int {
 	// make sure a >= b
 	if a < b {
@@ -43,12 +45,27 @@ func calcGCD(a, b int) int {
 	return a
 }
 
-// =======================================TLE code above=============================================
-
+// 208 ms, 92% (min 196ms)/ 20.5MB without pruning
 func splitArray(nums []int) int {
+	// ===== early pruning start =====
+	// 264ms, 64% / 18.7MB with 2 pruning
+	// 220ms, 76% / 17.7MB with only 1st pruning
+	if len(nums) == 1 {
+		return 1
+	}
+
+	if !done {
+		done = true
+		calcMinPrimeFactors()
+	}
+
+	// if calcGCD(nums[0], nums[len(nums)-1]) > 1 {
+	// 	return 1
+	// }
+	// ===== pruning end =====
+
 	primeToMin := map[int]int{}
 	current := 0
-	calcMinPrimeFactors()
 	for _, num := range nums {
 		current++
 		// make a copy of last current + 1, to update primeToMin
@@ -99,10 +116,6 @@ var (
 
 // 1548520 ns/op for 1000000, 20x faster
 func calcMinPrimeFactors() {
-	if done {
-		return
-	}
-	done = true
 	p := 2
 	for p <= maxNum {
 		minPrimeFactors[p] = p
