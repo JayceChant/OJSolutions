@@ -101,6 +101,18 @@ func Test_splitArray(t *testing.T) {
 	}
 }
 
+func Benchmark_calcMinPrimeFactors(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		calcMinPrimeFactors()
+	}
+}
+
+func Benchmark_calcMinPrimeFactors2(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		calcMinPrimeFactors2()
+	}
+}
+
 func primeNumHelper(count int) []int {
 	ans := []int{2, 3, 5, 7, 11}
 	num := 13
