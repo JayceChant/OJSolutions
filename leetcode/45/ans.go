@@ -60,3 +60,28 @@ func jump(nums []int) int {
 	}
 	return step
 }
+
+// using bit operation to avoid judgement
+// 4ms, 100%
+// 4.3MB, 90.74%
+func jumpBO(nums []int) int {
+	length := len(nums)
+
+	step := 0
+	// the range [, thisRange) within step
+	thisRange := 1
+	// the range [, nextRange) within step+1
+	nextRange := 1
+	i := 0
+	for thisRange < length {
+		step++
+		for i < thisRange {
+			farthest := i + nums[i] + 1
+			flag := (nextRange - farthest) >> 31
+			nextRange = (^flag)&nextRange + flag&farthest
+			i++
+		}
+		thisRange = nextRange
+	}
+	return step
+}
