@@ -62,6 +62,7 @@ func search(nums []int, target int) int {
 	return -1
 }
 
+// relative to 153 (but 153 return nums[low])
 // func findMin(nums []int) int {
 // 	size := len(nums)
 // 	low := 0
@@ -69,9 +70,9 @@ func search(nums []int, target int) int {
 // 	for low != high {
 // 		mid := (low + high) / 2
 // 		if nums[mid] > nums[high] {
-// 			low = mid
+// 			low = mid + 1
 // 		} else {
-// 			high = mid - 1
+// 			high = mid
 // 		}
 // 	}
 // 	return low
