@@ -68,7 +68,7 @@ func parse(str string, length int) []int {
 
 // 0ms
 // 2.3MB
-func multiply64(str1 string, str2 string) string {
+func multiply32(str1 string, str2 string) string {
 	if str1 == "0" || str2 == "0" {
 		return "0"
 	}
@@ -76,16 +76,17 @@ func multiply64(str1 string, str2 string) string {
 	len2 := len(str2)
 	nums1 := parse32(str1, len1)
 	nums2 := parse32(str2, len2)
-	res := make([]uint64, (len1+len2+8)/9)
+	res := make([]uint32, (len1+len2+8)/9)
 	for i1, num1 := range nums1 {
 		for i2, num2 := range nums2 {
 			i := i1 + i2
-			res[i] += uint64(num1) * uint64(num2)
-			for res[i] >= 1000000000 {
-				res[i+1] += res[i] / 1000000000
-				res[i] %= 1000000000
+			sum := uint64(res[i]) + uint64(num1)*uint64(num2)
+			for sum >= 1000000000 {
+				res[i] = uint32(sum % 1000000000)
+				sum = uint64(res[i+1]) + sum/1000000000
 				i++
 			}
+			res[i] = uint32(sum)
 		}
 	}
 
