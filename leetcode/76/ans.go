@@ -1,7 +1,7 @@
 package main
 
-// 12ms
-// 3.4MB
+// 12ms, 84.46% (min 0ms)
+// 3.4MB, 52%
 func minWindowQueue(src string, tar string) string {
 	letterQues := map[byte](*queue){}
 	for i := range tar {
