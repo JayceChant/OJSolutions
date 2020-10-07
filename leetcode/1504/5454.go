@@ -76,38 +76,35 @@ func numSubmat3(mat [][]int) int {
 	rowNum := len(mat)
 	colNum := len(mat[0])
 
-	height := make([]int, colNum)
-	sum := make([]int, colNum)
-	stck := newStack()
+	heights := make([]int, colNum)
+	dpCount := make([]int, colNum)
+	hStack := newStack()
 	for row := 0; row < rowNum; row++ {
+		hStack.clear()
+
 		for col := 0; col < colNum; col++ {
 			if mat[row][col] == 1 {
-				height[col]++
+				heights[col]++
 			} else {
-				height[col] = 0
-			}
-			sum[col] = 0
-		}
-
-		stck.clear()
-
-		for col := 0; col < colNum; col++ {
-			for stck.size() > 0 && height[stck.top()] >= height[col] {
-				stck.pop()
+				heights[col] = 0
 			}
 
-			if stck.size() == 0 {
-				sum[col] = height[col] * (col + 1)
+			for hStack.size() > 0 && heights[hStack.top()] >= heights[col] {
+				hStack.pop()
+			}
+
+			if hStack.size() == 0 {
+				dpCount[col] = heights[col] * (col + 1)
 			} else {
-				preCol := stck.top()
-				sum[col] = sum[preCol] + height[col]*(col-preCol)
+				preCol := hStack.top()
+				dpCount[col] = dpCount[preCol] + heights[col]*(col-preCol)
 			}
 
-			stck.push(col)
+			hStack.push(col)
 		}
 
 		for col := 0; col < colNum; col++ {
-			count += sum[col]
+			count += dpCount[col]
 		}
 	}
 	return count
@@ -117,28 +114,9 @@ type stack struct {
 	data []int
 }
 
-func newStack() *stack {
-	return &stack{
-		data: make([]int, 0),
-	}
-}
-
-func (s *stack) size() int {
-	return len(s.data)
-}
-
-func (s *stack) push(v int) {
-	s.data = append(s.data, v)
-}
-
-func (s *stack) top() int {
-	return s.data[len(s.data)-1]
-}
-
-func (s *stack) pop() {
-	s.data = s.data[:len(s.data)-1]
-}
-
-func (s *stack) clear() {
-	s.data = s.data[:0]
-}
+func newStack() *stack      { return &stack{data: make([]int, 0)} }
+func (s *stack) size() int  { return len(s.data) }
+func (s *stack) push(v int) { s.data = append(s.data, v) }
+func (s *stack) top() int   { return s.data[len(s.data)-1] }
+func (s *stack) pop()       { s.data = s.data[:len(s.data)-1] }
+func (s *stack) clear()     { s.data = s.data[:0] }
